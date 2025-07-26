@@ -3,24 +3,25 @@ const axios = require("axios");
 const path = require("path");
 const { getPrefix } = global.utils;
 const { commands, aliases } = global.GoatBot;
-const doNotDelete = "[ ncs pro bot]"; // changing this wont change the goatbot V2 of list cmd it is just a decoyy
+
+const botSignature = "💬 | SuNiTa Mia • Always here for you";
 
 module.exports = {
   config: {
     name: "help",
-    version: "1.17",
-    author: "Chitron Bhattacharjee", // original author Kshitiz 
+    version: "2.1",
+    author: "SuNiTa Mia Dev Team",
     countDown: 5,
     role: 0,
     shortDescription: {
-      en: "View command usage and list all commands directly",
+      en: "Graceful help menu by SuNiTa Mia",
     },
     longDescription: {
-      en: "View command usage and list all commands directly",
+      en: "Get info and beautiful listing of all commands available",
     },
     category: "info",
     guide: {
-      en: "{pn} / help cmdName ",
+      en: "{pn} / help <command>",
     },
     priority: 1,
   },
@@ -32,9 +33,7 @@ module.exports = {
 
     if (args.length === 0) {
       const categories = {};
-      let msg = "";
-
-      msg += ``; // replace with your name 
+      let msg = `✨ 𝗦𝘂𝗡𝗶𝗧𝗮 𝗠𝗶𝗮 𝗖𝗼𝗺𝗺𝗮𝗻𝗱 𝗠𝗲𝗻𝘂 ✨\nYour personal assistant at your fingertips\n───────────────────────────────`;
 
       for (const [name, value] of commands) {
         if (value.config.role > 1 && role < value.config.role) continue;
@@ -45,25 +44,19 @@ module.exports = {
       }
 
       Object.keys(categories).forEach((category) => {
-        if (category !== "info") {
-          msg += `\n╭─────⭔『  ${category.toUpperCase()}  』`;
+        msg += `\n\n📁 ${category.toUpperCase()}`;
 
-
-          const names = categories[category].commands.sort();
-          for (let i = 0; i < names.length; i += 3) {
-            const cmds = names.slice(i, i + 2).map((item) => `✧${item}`);
-            msg += `\n│${cmds.join(" ".repeat(Math.max(1, 5 - cmds.join("").length)))}`;
-          }
-
-          msg += `\n╰────────────⭓`;
+        const names = categories[category].commands.sort();
+        for (let i = 0; i < names.length; i += 3) {
+          const cmds = names.slice(i, i + 3).map((cmd) => `🔹 ${cmd}`);
+          msg += `\n${cmds.join("   ")}`;
         }
       });
 
       const totalCommands = commands.size;
-      msg += `\n\n╭─────⭔[ 𝗘𝗻𝗷𝗼𝘆 🍀 ]\n│> 𝗧𝗼𝘁𝗮𝗹 𝗰𝗺𝗱𝘀: [${totalCommands}].\n│𝗧𝘆𝗽𝗲: [ ${prefix}𝗵𝗲𝗹𝗽 𝘁𝗼 \n│<𝗰𝗺𝗱> 𝘁𝗼 𝗹𝗲𝗮𝗿𝗻 𝘁𝗵𝗲 𝘂𝘀𝗮𝗴𝗲.]\n╰────────────:)`;
-      msg += ``;
-      msg += `\n╭─────⭔\n│💫 | [princes sophie]\n╰────────────:-)`; // its not decoy so change it if you want 
-
+      msg += `\n\n📦 Total Commands: ${totalCommands}`;
+      msg += `\n💡 Use: ${prefix}help <command>`;
+      msg += `\n───────────────────────────────\n${botSignature}`;
 
       await message.reply({
         body: msg,
@@ -73,33 +66,35 @@ module.exports = {
       const command = commands.get(commandName) || commands.get(aliases.get(commandName));
 
       if (!command) {
-        await message.reply(`Command "${commandName}" not found.`);
+        await message.reply(`⚠️ Command "${commandName}" not found.`);
       } else {
         const configCommand = command.config;
         const roleText = roleTextToString(configCommand.role);
         const author = configCommand.author || "Unknown";
 
-        const longDescription = configCommand.longDescription ? configCommand.longDescription.en || "No description" : "No description";
-
-        const guideBody = configCommand.guide?.en || "No guide available.";
+        const longDescription = configCommand.longDescription?.en || "No description available.";
+        const guideBody = configCommand.guide?.en || "No usage guide provided.";
         const usage = guideBody.replace(/{p}/g, prefix).replace(/{n}/g, configCommand.name);
 
-        const response = `╭── NAME ────⭓
-  │ ${configCommand.name}
-  ├── INFO
-  │ Description: ${longDescription}
-  │ Other names: ${configCommand.aliases ? configCommand.aliases.join(", ") : "Do not have"}
-  │ Other names in your group: Do not have
-  │ Version: ${configCommand.version || "1.0"}
-  │ Role: ${roleText}
-  │ Time per command: ${configCommand.countDown || 1}s
-  │ Author: ${author}
-  ├── Usage
-  │ ${usage}
-  ├── Notes
-  │ The content inside <XXXXX> can be changed
-  │ The content inside [a|b|c] is a or b or c
-  ╰━━━━━━━❖`;
+        const response = `✨ 𝗖𝗼𝗺𝗺𝗮𝗻𝗱 𝗗𝗲𝘁𝗮𝗶𝗹𝘀 ✨
+
+📌 Name: ${configCommand.name}
+💡 Description: ${longDescription}
+🔁 Aliases: ${configCommand.aliases ? configCommand.aliases.join(", ") : "None"}
+👤 Required Role: ${roleText}
+⏱️ Cooldown: ${configCommand.countDown || 1}s
+🛠️ Version: ${configCommand.version || "1.0"}
+🧑‍💻 Author: ${author}
+
+🧠 Usage:
+${usage}
+
+📚 Notes:
+• Use <...> for required values  
+• Use [a|b|c] to choose from options
+
+───────────────────────────────
+${botSignature}`;
 
         await message.reply(response);
       }
@@ -110,11 +105,11 @@ module.exports = {
 function roleTextToString(roleText) {
   switch (roleText) {
     case 0:
-      return "0 (All users)";
+      return "0 (Everyone)";
     case 1:
-      return "1 (Group administrators)";
+      return "1 (Group Admins)";
     case 2:
-      return "2 (Admin bot)";
+      return "2 (Bot Admin)";
     default:
       return "Unknown role";
   }
